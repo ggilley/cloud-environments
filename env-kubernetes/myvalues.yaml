@@ -45,6 +45,24 @@ jenkins:
             LimitMemory: "2048Mi"
             Tty: true
             Args: --registry-mirror=http://jenkins-x-docker-registry:5000 
+      JX-base:
+        volumes:
+        - type: EmptyDir
+          mountPath: /var/lib/docker    
+          memory: false             
+        EnvVars:
+          # Configure Docker client in Maven container to use dind daemon host address
+          DOCKER_HOST: tcp://localhost:2375
+        Containers:         
+          Dind:
+            Image: docker:18.06.1-dind
+            Privileged: true
+            RequestCpu: "512m"
+            RequestMemory: "1024Mi"
+            LimitCpu: "1"
+            LimitMemory: "2048Mi"
+            Tty: true
+            Args: --registry-mirror=http://jenkins-x-docker-registry:5000                   
             
 # Configure Docker secret to push images to docker.io            
 PipelineSecrets:
