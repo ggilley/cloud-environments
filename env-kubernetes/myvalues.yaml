@@ -3,4 +3,5 @@ jenkins:
   Master:
     ServiceAnnotations:
       fabric8.io/expose: "true"
-      fabric8.io/ingress.annotations: "kubernetes.io/ingress.class: nginx-external\nnginx.ingress.kubernetes.io/proxy-body-size: 500m"
+      fabric8.io/ingress.annotations: "kubernetes.io/ingress.class: nginx-external"
+      nginx.ingress.kubernetes.io/proxy-body-size: "500m"
