@@ -49,7 +49,13 @@ jenkins:
         volumes:
         - type: EmptyDir
           mountPath: /var/lib/docker    
-          memory: false             
+          memory: false   
+        - type: Secret
+          secretName: jenkins-docker-cfg
+          mountPath: /home/jenkins/.docker    
+        - type: Secret
+          secretName: jenkins-release-gpg
+          mountPath: /home/jenkins/.gnupg                          
         EnvVars:
           # Configure Docker client in Maven container to use dind daemon host address
           DOCKER_HOST: tcp://localhost:2375
