@@ -4,3 +4,82 @@ jenkins:
     ServiceAnnotations:
       fabric8.io/expose: "true"
       fabric8.io/ingress.annotations: "kubernetes.io/ingress.class: nginx-external\nnginx.ingress.kubernetes.io/proxy-body-size: 500m"
+
+jenkins:
+  Servers:
+    Global:
+      EnvVars:
+        DOCKER_REGISTRY: "registry-internal.elpenguino.net"
+  Agent:
+
+    DockerHostPath: null  # set to 'null' to disable mounting /var/run/docker.sock of VM's docker daemon
+
+    PodTemplates:
+      Maven:
+        volumes:
+        - type: Secret
+          secretName: jenkins-maven-settings
+          mountPath: /root/.m2/
+        - type: Secret
+          secretName: jenkins-docker-cfg
+          mountPath: /home/jenkins/.docker
+        - type: Secret
+          secretName: jenkins-release-gpg
+          mountPath: /home/jenkins/.gnupg
+          # configure emptyDir volume for dind daemon storage graph 
+        - type: EmptyDir
+          mountPath: /var/lib/docker    
+          memory: false    
+        EnvVars:
+          # increase JVM memory allocation
+          _JAVA_OPTIONS: '-XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap -Dsun.zip.disableMemoryMapping=true -XX:+UseParallelGC -XX:MinHeapFreeRatio=5 -XX:MaxHeapFreeRatio=10 -XX:GCTimeRatio=4 -XX:AdaptiveSizePolicyWeight=90 -Xms256m -Xmx512m'
+          # Configure Docker client in Maven container to use dind daemon host address
+          DOCKER_HOST: tcp://localhost:2375
+        # Configures Dind daemon sidecar container with local registry mirror
+        Containers:          
+          Dind:
+            Image: docker:18.06.1-dind
+            Privileged: true
+            RequestCpu: "512m"
+            RequestMemory: "1024Mi"
+            LimitCpu: "1"
+            LimitMemory: "2048Mi"
+            Tty: true
+            Args: --registry-mirror=http://jenkins-x-docker-registry:5000 
+            
+# Configure Docker secret to push images to docker.io            
+PipelineSecrets:
+  DockerConfig: |-
+      {
+        "auths": {
+          "registry-internal.elpenguino.net": {
+            "auth": "YWRtaW46SGFyYm9yMTIzNDU="
+          }
+        },
+        "HttpHeaders": {
+          "User-Agent": "Docker-Client/18.09.7 (linux)"
+        }
+      }
+
+# Configures local docker registry as pull-through cache proxy to https://registry-1.docker.io
+docker-registry:
+  configData: 
+    health:
+      storagedriver:
+        enabled: true
+        interval: 10s
+        threshold: 3
+    http:
+      addr: :5000
+      headers:
+        X-Content-Type-Options:
+        - nosniff
+    log:
+      fields:
+        service: registry
+    storage:
+      cache:
+        blobdescriptor: inmemory
+    version: 0.1
+    proxy:
+        remoteurl: https://registry-1.docker.io
