@@ -1,6 +1,13 @@
 # Override configuration from https://github.com/jenkins-x/jenkins-x-platform/blob/master/jenkins-x-platform/values.yaml
+docker-registry:
+  enabled: false
+
+nexus:
+  enabled: false
+
 jenkins:
   Master:
+    AdminPassword: "admin"
     ServiceAnnotations:
       fabric8.io/expose: "true"
       fabric8.io/ingress.annotations: "kubernetes.io/ingress.class: nginx-external\nnginx.ingress.kubernetes.io/proxy-body-size: 500m"
