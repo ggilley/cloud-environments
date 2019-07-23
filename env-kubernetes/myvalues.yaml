@@ -15,7 +15,7 @@ jenkins:
   Servers:
     Global:
       EnvVars:
-        DOCKER_REGISTRY: "registry-internal.elpenguino.net"
+        DOCKER_REGISTRY: "registry-internal.g3rg.org"
   Agent:
 
     DockerHostPath: null  # set to 'null' to disable mounting /var/run/docker.sock of VM's docker daemon
@@ -82,7 +82,7 @@ PipelineSecrets:
   DockerConfig: |-
       {
         "auths": {
-          "registry-internal.elpenguino.net": {
+          "registry-internal.g3rg.org": {
             "auth": "YWRtaW46SGFyYm9yMTIzNDU="
           }
         },
