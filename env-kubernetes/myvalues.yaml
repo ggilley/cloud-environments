@@ -76,7 +76,27 @@ jenkins:
             LimitMemory: "2048Mi"
             Tty: true
             Args: --registry-mirror=http://jenkins-x-docker-registry:5000                   
-            
+      Go:
+        volumes:
+        - type: Secret
+          secretName: jenkins-docker-cfg
+          mountPath: /home/jenkins/.docker
+        - type: EmptyDir
+          mountPath: /var/lib/docker    
+          memory: false             
+        EnvVars:
+          DOCKER_HOST: tcp://localhost:2375
+        Containers:
+          Dind:
+            Image: docker:18.06.1-dind
+            Privileged: true
+            RequestCpu: "512m"
+            RequestMemory: "1024Mi"
+            LimitCpu: "1"
+            LimitMemory: "2048Mi"
+            Tty: true
+            Args: --registry-mirror=http://jenkins-x-docker-registry:5000          
+
 # Configure Docker secret to push images to docker.io            
 PipelineSecrets:
   DockerConfig: |-
