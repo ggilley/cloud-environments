@@ -11,6 +11,7 @@ jenkins:
     ServiceAnnotations:
       fabric8.io/expose: "true"
       fabric8.io/ingress.annotations: "kubernetes.io/ingress.class: nginx-external\nnginx.ingress.kubernetes.io/proxy-body-size: 500m\nnginx.ingress.kubernetes.io/whitelist-source-range: 192.30.252.0/22,185.199.108.0/22,140.82.112.0/20,10.0.0.0/8,172.16.0.0/12,192.168.0.0/16"
+    Image: Image: "jenkinsxio/jenkinsx"
 
   Servers:
     Global:
@@ -96,6 +97,86 @@ jenkins:
             LimitMemory: "2048Mi"
             Tty: true
             Args: --registry-mirror=http://jenkins-x-docker-registry:5000          
+      Nodejs8x:
+        volumes:
+        - type: Secret
+          secretName: jenkins-docker-cfg
+          mountPath: /home/jenkins/.docker
+        - type: EmptyDir
+          mountPath: /var/lib/docker    
+          memory: false             
+        EnvVars:
+          DOCKER_HOST: tcp://localhost:2375
+        Containers:
+          Dind:
+            Image: docker:18.06.1-dind
+            Privileged: true
+            RequestCpu: "512m"
+            RequestMemory: "1024Mi"
+            LimitCpu: "1"
+            LimitMemory: "2048Mi"
+            Tty: true
+            Args: --registry-mirror=http://jenkins-x-docker-registry:5000   
+      Nodejs10x:
+        volumes:
+        - type: Secret
+          secretName: jenkins-docker-cfg
+          mountPath: /home/jenkins/.docker
+        - type: EmptyDir
+          mountPath: /var/lib/docker    
+          memory: false             
+        EnvVars:
+          DOCKER_HOST: tcp://localhost:2375
+        Containers:
+          Dind:
+            Image: docker:18.06.1-dind
+            Privileged: true
+            RequestCpu: "512m"
+            RequestMemory: "1024Mi"
+            LimitCpu: "1"
+            LimitMemory: "2048Mi"
+            Tty: true
+            Args: --registry-mirror=http://jenkins-x-docker-registry:5000   
+      Nodejs:
+        volumes:
+        - type: Secret
+          secretName: jenkins-docker-cfg
+          mountPath: /home/jenkins/.docker
+        - type: EmptyDir
+          mountPath: /var/lib/docker    
+          memory: false             
+        EnvVars:
+          DOCKER_HOST: tcp://localhost:2375
+        Containers:
+          Dind:
+            Image: docker:18.06.1-dind
+            Privileged: true
+            RequestCpu: "512m"
+            RequestMemory: "1024Mi"
+            LimitCpu: "1"
+            LimitMemory: "2048Mi"
+            Tty: true
+            Args: --registry-mirror=http://jenkins-x-docker-registry:5000   
+      Maven-Nodejs:
+        volumes:
+        - type: Secret
+          secretName: jenkins-docker-cfg
+          mountPath: /home/jenkins/.docker
+        - type: EmptyDir
+          mountPath: /var/lib/docker    
+          memory: false             
+        EnvVars:
+          DOCKER_HOST: tcp://localhost:2375
+        Containers:
+          Dind:
+            Image: docker:18.06.1-dind
+            Privileged: true
+            RequestCpu: "512m"
+            RequestMemory: "1024Mi"
+            LimitCpu: "1"
+            LimitMemory: "2048Mi"
+            Tty: true
+            Args: --registry-mirror=http://jenkins-x-docker-registry:5000   
 
 # Configure Docker secret to push images to docker.io            
 PipelineSecrets:
