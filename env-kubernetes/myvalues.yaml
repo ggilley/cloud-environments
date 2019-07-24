@@ -18,9 +18,9 @@ jenkins:
 
       TLS:
       - secretName: jenkins.tls
-         hosts:
+        hosts:
            - jenkins.jx.elpenguino.net
-           
+
   Servers:
     Global:
       EnvVars:
